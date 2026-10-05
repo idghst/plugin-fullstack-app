@@ -33,6 +33,7 @@
 
 - 업무 규칙·인증·생성기 안전성 변경은 실패하는 테스트를 먼저 만든다. UI 없는 문서·설정 수정은 diff와 내용 확인으로 충분하다.
 - 변경 위험에 맞춰 `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`를 실행한다. 패키지 경계는 `node tooling/scripts/check-boundaries.mjs`로 확인한다.
+- 기능·코드 변경 완료 전에는 루트에서 `pnpm check`를 실행한다. 실패한 검증을 숨기거나 검사를 우회하지 않는다.
 - API는 별도 PostgreSQL test DB로 통합 테스트한다. 웹은 브라우저로 실제 화면과 CRUD를 확인하고, 모바일은 시뮬레이터/에뮬레이터, 데스크톱은 Tauri 창에서 확인한다.
 - Expo export, Vite build, Rust check는 native UI 실행 성공을 의미하지 않는다. 실행하지 못한 플랫폼과 원인을 사실대로 남긴다.
 - 완료 보고는 변경점, 검증 명령/결과, 남은 한계만 간결하게 쓴다.

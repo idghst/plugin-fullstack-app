@@ -2,6 +2,8 @@
 
 웹·모바일·데스크톱·API를 같은 계약과 업무 규칙으로 개발하는 TypeScript 모노레포다. 로그인한 사용자의 Project CRUD를 실제 PostgreSQL에 저장하며, 소스 템플릿과 같은 저장소에서 AI Skill/Plugin을 배포한다.
 
+[Public GitHub Template](https://github.com/idghst/plugin-fullstack-app)에서 **Use this template**으로 새 저장소를 만들거나 clone한 뒤 아래 생성기를 사용할 수 있다.
+
 ## 구성
 
 | 영역      | 선택                                 | 책임                                          |
@@ -121,6 +123,8 @@ Redis, 파일 저장소, 결제, 알림, 검색, AI, 라이선스 integration은
 ## 검증 기록
 
 2026-10-06 로컬 검증: `pnpm check`, 공유 코드 테스트 23개, 생성기·도구 테스트 17개, 실제 PostgreSQL API 통합 12개, Playwright 웹 E2E 1개, Expo iOS/Android/Web export, production API Docker 이미지의 non-root 실행과 health check를 확인했다. 브라우저에서 웹 가입·CRUD와 Desktop Vite 화면을 조작하고, iOS 26.4 simulator의 Expo Go에서 로그인·Project 생성·수정·삭제·로그아웃을 실행했다. 웹에서 만든 Project를 iOS에서 수정하고 Desktop 화면에서 변경 내용을 확인했다. 생성기로 별도 임시 경로에 만든 전체 프로젝트도 `pnpm install --frozen-lockfile`, `pnpm env:setup`, `pnpm check`를 통과했다.
+
+[GitHub Actions 전체 검증](https://github.com/idghst/plugin-fullstack-app/actions/runs/37367731023)도 Ubuntu/Node.js 22에서 설치·check·PostgreSQL 통합·웹 E2E·Docker image build를 통과했다. [생성기 portability workflow](https://github.com/idghst/plugin-fullstack-app/actions/runs/37367730971)의 Windows/macOS job도 통과했다.
 
 Tauri Rust native build/창 조작과 Android emulator 실행은 이 환경에서 확인하지 못했다. `pnpm build`의 desktop 결과는 Vite frontend이고 mobile 결과는 Expo export다. macOS/Windows Tauri native build를 실행할 수 있는 수동 GitHub Actions workflow를 제공한다.
 

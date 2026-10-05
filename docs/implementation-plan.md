@@ -17,6 +17,6 @@ NestJS 11을 선택한다. nestjs-zod 5가 선언하는 peer 범위에 NestJS 12
 - [x] `pnpm check`, `pnpm test:e2e`, 모바일 export/typecheck, iOS simulator Expo Go 조작
 - [x] 안전한 생성기, 선택 앱, Skill references, portable/Claude manifests, Agent 규칙
 - [x] README, Architecture, ADR, CI, Dockerfile, 라이선스
-- [ ] 비밀값/불필요한 파일 확인, 한글 커밋, Public GitHub 게시
+- [x] 비밀값/불필요한 파일 확인, 한글 커밋, Public GitHub Template 게시
 
 TDD는 공유 업무 로직, 인증 경계, 생성기의 덮어쓰기/경로 보호, API Client refresh/retry와 CRUD 통합에 적용한다. 각 작업자는 서로 다른 디렉터리에 쓰고 부모가 전체 설치·타입·테스트·빌드 결과를 검토한다. DB에는 development와 test를 분리하며 통합 테스트는 test DB만 사용한다. native 도구가 없으면 설치 가능한 로컬 도구로 검증하되 성공 여부를 사실대로 기록한다.
