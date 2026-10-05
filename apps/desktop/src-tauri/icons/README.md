@@ -2,7 +2,7 @@
 
 These placeholder resources come from `tauri-apps/create-tauri-app`, commit
 `12db955f20162e7422cbeed76c2aa630760ccca3`, under the included MIT license.
-`icon.png` is the upstream RGBA `128x128@2x.png`, copied under Tauri's default name.
+`icon.png` is the upstream RGBA `32x32.png`, copied under Tauri's default name.
 
 Source: https://github.com/tauri-apps/create-tauri-app/tree/12db955f20162e7422cbeed76c2aa630760ccca3/templates/_base_/src-tauri/icons
 
