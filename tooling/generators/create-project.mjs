@@ -32,6 +32,8 @@ const excludedDirectories = new Set([
   'ios',
   'android',
   '.DS_Store',
+  'next-env.d.ts',
+  'expo-env.d.ts',
 ]);
 const rootDirectories = new Set([
   'apps',
@@ -41,6 +43,7 @@ const rootDirectories = new Set([
   'docs',
   'docker',
   '.github',
+  '.agents',
   '.githooks',
   '.codex-plugin',
   '.claude-plugin',
@@ -88,6 +91,13 @@ export async function generateProject({
         filter: async (path) => {
           const local = relative(source, path);
           const segments = local.split(sep);
+          if (
+            segments[0] === '.agents' &&
+            !['.agents', '.agents/plugins', '.agents/plugins/marketplace.json'].includes(
+              segments.join('/'),
+            )
+          )
+            return false;
           if (segments.some((part) => excludedDirectories.has(part))) return false;
           if (segments[0] === 'apps' && omit.includes(segments[1])) return false;
           if (omit.includes('desktop') && segments.join('/') === '.github/workflows/native.yml')

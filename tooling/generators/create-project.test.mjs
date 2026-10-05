@@ -220,6 +220,41 @@ test('rejects unsupported auth/database removal before writing destination', asy
   }
 });
 
+test('copies marketplace catalogs without copying personal agent files', async (t) => {
+  const options = await fixture(t);
+  await mkdir(join(options.source, '.agents/plugins'), { recursive: true });
+  await mkdir(join(options.source, '.agents/skills'), { recursive: true });
+  await mkdir(join(options.source, '.claude-plugin'), { recursive: true });
+  const catalog =
+    '{"name":"idghst-fullstack","plugins":[{"name":"fullstack-starter","source":"./"}]}';
+  await writeFile(join(options.source, '.agents/plugins/marketplace.json'), catalog);
+  await writeFile(join(options.source, '.agents/plugins/personal.json'), 'private configuration');
+  await writeFile(join(options.source, '.agents/skills/private.md'), 'private instructions');
+  await writeFile(join(options.source, '.claude-plugin/marketplace.json'), catalog);
+  const destination = await generateProject({ ...options, name: 'catalog-service' });
+  assert.equal(
+    await readFile(join(destination, '.agents/plugins/marketplace.json'), 'utf8'),
+    catalog,
+  );
+  assert.equal(
+    await readFile(join(destination, '.claude-plugin/marketplace.json'), 'utf8'),
+    catalog,
+  );
+  await assert.rejects(access(join(destination, '.agents/plugins/personal.json')), {
+    code: 'ENOENT',
+  });
+  await assert.rejects(access(join(destination, '.agents/skills')), { code: 'ENOENT' });
+});
+
+test('excludes framework-generated environment declarations', async (t) => {
+  const options = await fixture(t);
+  await writeFile(join(options.source, 'apps/web/next-env.d.ts'), 'generated Next.js declaration');
+  await writeFile(join(options.source, 'apps/mobile/expo-env.d.ts'), 'generated Expo declaration');
+  const destination = await generateProject({ ...options, name: 'clean-service' });
+  await assert.rejects(access(join(destination, 'apps/web/next-env.d.ts')), { code: 'ENOENT' });
+  await assert.rejects(access(join(destination, 'apps/mobile/expo-env.d.ts')), { code: 'ENOENT' });
+});
+
 test('rejects oversized unrelated files and leaves destination absent after failure', async (t) => {
   const options = await fixture(t);
   await writeFile(join(options.source, 'dump.bin'), Buffer.alloc(6 * 1024 * 1024));

@@ -1,0 +1,14 @@
+{
+  "name": "idghst-fullstack",
+  "description": "TypeScript fullstack starter architecture and implementation skill.",
+  "owner": {
+    "name": "idghst"
+  },
+  "plugins": [
+    {
+      "name": "fullstack-starter",
+      "source": "./",
+      "description": "Architecture and implementation workflow for a TypeScript web, mobile, desktop and API starter."
+    }
+  ]
+}

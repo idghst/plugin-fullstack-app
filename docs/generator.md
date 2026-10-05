@@ -36,4 +36,6 @@ source에서 등록된 template 디렉터리·설정만 복사한다. `.git`, de
 
 root `package.json.name`만 요청한 이름으로 바꾼다. plugin name과 internal `@starter/*` namespace는 유지한다. UI 앱을 제외하면 기존 lockfile을 제거하여 stale importer를 피하고 `pnpm install`에서 재생성한다. 기본 전체 복사는 원본 lockfile을 유지한다.
 
+marketplace catalog는 `.agents/plugins/marketplace.json`과 `.claude-plugin/marketplace.json`을 보존한다. `.agents` 아래의 다른 개인 설정·스킬은 복사하지 않는다. Next.js/Expo가 생성하는 `next-env.d.ts`, `expo-env.d.ts`는 제외하고 각 framework가 다시 생성하게 둔다.
+
 출력 후 git history나 remote는 없다. 새 제품의 저장소를 직접 초기화하고 연결한다. 생성된 README는 기본 전체 템플릿의 설명을 포함하므로 제외한 앱의 명령은 실행하지 않는다.

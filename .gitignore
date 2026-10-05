@@ -16,5 +16,7 @@ target/
 .pnpm-store/
 artifacts/
 *.tsbuildinfo
+next-env.d.ts
+expo-env.d.ts
 apps/mobile/ios/
 apps/mobile/android/

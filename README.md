@@ -102,6 +102,26 @@ pnpm test:e2e
 
 `plugin.json`은 portable Agent Plugins 1.0이고 `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`은 같은 name/version의 compatibility manifest다. 제공하는 기능은 skill과 references다. 별도 MCP tool, hosted API, 자동 외부 권한은 선언하지 않는다.
 
+GitHub 저장소를 marketplace로 등록한 뒤 `fullstack-starter@idghst-fullstack`을 설치한다. 저장소를 clone하는 것만으로 설치되지는 않는다.
+
+Codex CLI:
+
+```sh
+codex plugin marketplace add idghst/plugin-fullstack-app
+codex plugin add fullstack-starter@idghst-fullstack
+codex plugin list --marketplace idghst-fullstack --available --json
+```
+
+Claude Code:
+
+```sh
+claude plugin marketplace add idghst/plugin-fullstack-app
+claude plugin install fullstack-starter@idghst-fullstack
+claude plugin list
+```
+
+Claude 세션에서는 `/plugin marketplace add idghst/plugin-fullstack-app`과 `/plugin install fullstack-starter@idghst-fullstack`을 사용할 수 있다. `/plugin` 패널에서 설치 상태를 확인한다. catalog 구조와 업데이트 명령은 [플러그인 문서](docs/plugin.md)에 있다.
+
 ```sh
 pnpm plugin:package
 tar -tzf artifacts/fullstack-starter-0.1.0.tar.gz
@@ -122,7 +142,7 @@ Redis, 파일 저장소, 결제, 알림, 검색, AI, 라이선스 integration은
 
 ## 검증 기록
 
-2026-10-06 로컬 검증: `pnpm check`, 공유 코드 테스트 23개, 생성기·도구 테스트 17개, 실제 PostgreSQL API 통합 12개, Playwright 웹 E2E 1개, Expo iOS/Android/Web export, production API Docker 이미지의 non-root 실행과 health check를 확인했다. 브라우저에서 웹 가입·CRUD와 Desktop Vite 화면을 조작하고, iOS 26.4 simulator의 Expo Go에서 로그인·Project 생성·수정·삭제·로그아웃을 실행했다. 웹에서 만든 Project를 iOS에서 수정하고 Desktop 화면에서 변경 내용을 확인했다. 생성기로 별도 임시 경로에 만든 전체 프로젝트도 `pnpm install --frozen-lockfile`, `pnpm env:setup`, `pnpm check`를 통과했다.
+2026-10-06 로컬 검증: `pnpm check`, 공유 코드 테스트 23개, 생성기·도구 테스트 21개, 실제 PostgreSQL API 통합 12개, Playwright 웹 E2E 1개, Expo iOS/Android/Web export, production API Docker 이미지의 non-root 실행과 health check를 확인했다. 브라우저에서 웹 가입·CRUD와 Desktop Vite 화면을 조작하고, iOS 26.4 simulator의 Expo Go에서 로그인·Project 생성·수정·삭제·로그아웃을 실행했다. 웹에서 만든 Project를 iOS에서 수정하고 Desktop 화면에서 변경 내용을 확인했다. 생성기로 별도 임시 경로에 만든 전체 프로젝트도 `pnpm install --frozen-lockfile`, `pnpm env:setup`, `pnpm check`를 통과했다.
 
 [GitHub Actions 전체 검증](https://github.com/idghst/plugin-fullstack-app/actions/runs/37367731023)도 Ubuntu/Node.js 22에서 설치·check·PostgreSQL 통합·웹 E2E·Docker image build를 통과했다. [생성기 portability workflow](https://github.com/idghst/plugin-fullstack-app/actions/runs/37367730971)의 Windows/macOS job도 통과했다.
 
