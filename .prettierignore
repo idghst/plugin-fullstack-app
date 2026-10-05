@@ -1,0 +1,16 @@
+pnpm-lock.yaml
+node_modules
+dist
+.next
+.expo
+.turbo
+target
+coverage
+artifacts
+playwright-report
+test-results
+Cargo.lock
+apps/mobile/ios
+apps/mobile/android
+**/next-env.d.ts
+**/expo-env.d.ts

@@ -1,0 +1,45 @@
+{
+  "name": "fullstack-starter",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": ">=22.13.0 <27",
+    "pnpm": ">=10 <11"
+  },
+  "scripts": {
+    "dev": "pnpm env:setup && pnpm db:migrate && turbo run build --filter='./packages/*' && turbo run dev --filter=@starter/web --filter=@starter/api",
+    "dev:web": "pnpm --filter @starter/web dev",
+    "dev:api": "pnpm --filter @starter/api dev",
+    "dev:mobile": "pnpm --filter @starter/mobile dev",
+    "dev:desktop": "pnpm --filter @starter/desktop dev:native",
+    "lint": "eslint . --max-warnings 0 && prettier . --check",
+    "format": "prettier . --write",
+    "typecheck": "turbo run typecheck",
+    "test": "vitest run && node --test tooling/generators/*.test.mjs tooling/scripts/*.test.mjs",
+    "test:integration": "pnpm --filter @starter/api test:integration",
+    "test:e2e": "pnpm --filter @starter/web test:e2e",
+    "build": "turbo run build",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build && node tooling/scripts/check-boundaries.mjs",
+    "db:generate": "pnpm --filter @starter/db generate",
+    "db:migrate": "pnpm --filter @starter/db migrate",
+    "db:seed": "pnpm --filter @starter/db seed",
+    "db:migrate:test": "pnpm --filter @starter/db migrate:test",
+    "env:setup": "node tooling/scripts/setup-env.mjs",
+    "create:project": "node tooling/generators/create-project.mjs",
+    "plugin:package": "node tooling/scripts/package-plugin.mjs",
+    "audit": "pnpm audit --prod",
+    "hooks:install": "node tooling/scripts/install-hooks.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.15",
+    "@starter/eslint-config": "workspace:*",
+    "@starter/tsconfig": "workspace:*",
+    "eslint": "10.12.0",
+    "prettier": "3.9.9",
+    "turbo": "2.11.7",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.71.1",
+    "vitest": "4.1.11"
+  }
+}

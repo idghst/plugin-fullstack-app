@@ -1,0 +1,9 @@
+{
+  "name": "fullstack-starter",
+  "version": "0.1.0",
+  "description": "Architecture and implementation workflow for a TypeScript web, mobile, desktop and API starter.",
+  "author": {
+    "name": "Fullstack Starter contributors"
+  },
+  "license": "MIT"
+}

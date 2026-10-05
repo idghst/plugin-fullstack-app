@@ -1,0 +1,19 @@
+{
+  "name": "fullstack-starter",
+  "version": "0.1.0",
+  "description": "Architecture and implementation workflow for a TypeScript web, mobile, desktop and API starter.",
+  "author": {
+    "name": "Fullstack Starter contributors"
+  },
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Fullstack Starter",
+    "shortDescription": "Build fullstack apps",
+    "longDescription": "Build and maintain a pnpm/Turborepo starter with Next.js, Expo, Tauri, NestJS, PostgreSQL and Drizzle. Reuse contracts, keep domain rules separate from adapters, and verify changes on the actual target platform.",
+    "developerName": "Fullstack Starter contributors",
+    "category": "Developer Tools",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": "Use this repository's fullstack-starter skill to implement my feature with shared contracts and verified platform behavior."
+  }
+}

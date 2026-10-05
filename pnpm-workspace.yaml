@@ -1,0 +1,21 @@
+packages:
+  - apps/*
+  - packages/*
+
+injectWorkspacePackages: true
+strictPeerDependencies: true
+autoInstallPeers: true
+overrides:
+  # Compatible patched releases for Expo's xcode helper and Nest OpenAPI YAML.
+  'xcode>uuid': 11.1.1
+  '@nestjs/swagger>js-yaml': 5.4.2
+syncInjectedDepsAfterScripts:
+  - build
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - esbuild
+  - sharp
+  - unrs-resolver
+ignoredBuiltDependencies:
+  - '@scarf/scarf'

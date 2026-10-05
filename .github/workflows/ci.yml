@@ -1,0 +1,53 @@
+name: Validate starter
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: pnpm/action-setup@v6.1.0
+        with:
+          version: 10.32.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm env:setup
+      - run: pnpm check
+      - run: docker compose --profile test up -d --wait
+      - run: pnpm db:migrate && pnpm db:migrate:test
+      - run: pnpm test:integration
+      - if: hashFiles('apps/web/package.json') != ''
+        run: pnpm --filter @starter/web exec playwright install --with-deps chromium
+      - name: Start API and verify readiness
+        if: hashFiles('apps/web/package.json') != ''
+        run: |
+          node --env-file=.env apps/api/dist/main.js > /tmp/starter-api.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail http://localhost:4000/health; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/starter-api.log
+          exit 1
+      - if: hashFiles('apps/web/package.json') != ''
+        run: pnpm test:e2e
+      - name: Build production API image
+        run: docker build -f docker/api.Dockerfile -t fullstack-starter-api:ci .
+      - uses: actions/upload-artifact@v7.0.1
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+      - if: always()
+        run: docker compose --profile test down

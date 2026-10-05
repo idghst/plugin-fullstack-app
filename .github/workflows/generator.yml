@@ -1,0 +1,26 @@
+name: Generator portability
+on:
+  push:
+    paths:
+      - 'tooling/generators/**'
+      - '.github/workflows/generator.yml'
+  pull_request:
+    paths:
+      - 'tooling/generators/**'
+      - '.github/workflows/generator.yml'
+permissions:
+  contents: read
+jobs:
+  generator:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: 22
+      - run: node --test tooling/generators/create-project.test.mjs
