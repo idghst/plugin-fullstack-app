@@ -72,7 +72,13 @@ claude plugin validate --strict .claude-plugin/marketplace.json
 claude plugin validate --strict .
 ```
 
-테스트는 catalog identity와 정책, 루트 source의 manifest/skill 존재, 생성기의 catalog 복사와 개인 `.agents` 파일 제외를 확인한다. Claude strict 검증은 catalog와 상대경로 plugin manifest의 필드도 검사한다. 실제 원격 다운로드·설치 확인은 GitHub에 catalog가 반영된 뒤 별도로 수행한다.
+테스트는 catalog identity와 정책, 루트 source의 manifest/skill 존재, 생성기의 catalog 복사와 개인 `.agents` 파일 제외를 확인한다. Claude strict 검증은 catalog 필드를 검사한다. plugin manifest는 별도로 일반 검증하며, 실제 설치는 각 호스트의 설치 명령으로 수행한다.
+
+2026-10-06 Codex CLI 0.160.0에서 GitHub source를 일시 등록한 뒤 `--available --json`으로 `fullstack-starter@idghst-fullstack` version `0.1.0`, install policy `AVAILABLE`을 확인했다. 테스트용 등록은 제거했다. 실제 plugin 설치나 전역 활성화는 수행하지 않았다.
+
+Claude Code에서도 같은 GitHub source의 HTTPS clone, catalog validation, marketplace 등록과 목록 조회를 확인한 뒤 테스트용 등록을 제거했다.
+
+`claude plugin validate .claude-plugin/plugin.json --strict`는 root `CLAUDE.md`가 plugin 프로젝트 컨텍스트로 자동 로드되지 않는다는 경고로 실패한다. catalog strict 검증은 통과하며 일반 plugin 검증의 구조 오류는 없다. 프로젝트의 `CLAUDE.md`는 템플릿을 clone한 작업 공간용이고, 설치된 plugin은 `skills/fullstack-starter/SKILL.md`에서 작업 대상 프로젝트의 `AGENTS.md`를 명시적으로 읽는다.
 
 ## 패키징
 
