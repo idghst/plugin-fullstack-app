@@ -38,6 +38,8 @@ Expo export는 native 앱 설치나 SecureStore의 기기 동작을 증명하지
 
 도구가 없는 경우 성공으로 표시하지 말고 SDK/Rust/OS 조건과 수행한 검증 범위를 기록한다. CI에서 실행 가능한 headless 검사와 사람이 수행하는 native 인수는 구분한다.
 
+2026-10-06 [native desktop CI](https://github.com/idghst/plugin-fullstack-app/actions/runs/37368661201)에서 macOS/Windows `tauri build`를 모두 확인했다. 이 결과는 Rust 컴파일과 bundling 검증이며 Tauri 창의 수동 인수를 뜻하지 않는다. iOS 26.4 simulator에서는 Expo Go로 로그인·Project CRUD·로그아웃을 실제 조작했다.
+
 ## 데이터와 비밀
 
 test DB는 development와 분리하고 각 테스트는 자신이 만든 데이터만 정리한다. test artifact에 password/token/환경변수가 노출되지 않는지 확인한다. 개발 DB의 초기화나 운영 migration을 테스트의 부수 효과로 수행하지 않는다.

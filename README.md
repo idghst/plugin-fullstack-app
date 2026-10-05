@@ -146,7 +146,7 @@ Redis, 파일 저장소, 결제, 알림, 검색, AI, 라이선스 integration은
 
 [GitHub Actions 전체 검증](https://github.com/idghst/plugin-fullstack-app/actions/runs/37367731023)도 Ubuntu/Node.js 22에서 설치·check·PostgreSQL 통합·웹 E2E·Docker image build를 통과했다. [생성기 portability workflow](https://github.com/idghst/plugin-fullstack-app/actions/runs/37367730971)의 Windows/macOS job도 통과했다.
 
-Tauri Rust native build/창 조작과 Android emulator 실행은 이 환경에서 확인하지 못했다. `pnpm build`의 desktop 결과는 Vite frontend이고 mobile 결과는 Expo export다. macOS/Windows Tauri native build를 실행할 수 있는 수동 GitHub Actions workflow를 제공한다.
+[macOS/Windows Tauri native build](https://github.com/idghst/plugin-fullstack-app/actions/runs/37368661201)는 두 OS에서 모두 통과했다. 초기 Windows 검증에서 발견한 누락 아이콘을 공식 Tauri 템플릿의 MIT 리소스로 추가하고 재검증했다. Tauri 실제 창 조작과 Android emulator 실행은 확인하지 못했다. `pnpm build`의 desktop 결과는 Vite frontend이고 mobile 결과는 Expo export다. native build는 별도 수동 GitHub Actions workflow에서 수행한다.
 
 ## 알려진 의존성 문제
 
