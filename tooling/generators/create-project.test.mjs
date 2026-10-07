@@ -13,6 +13,7 @@ import {
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 let generateProject;
 try {
@@ -289,10 +290,10 @@ test('rejects database addresses as profile flags before writing destination', a
 
 test('CLI accepts database choice but never echoes rejected secret arguments', async (t) => {
   const { cwd } = await fixture(t);
-  const generator = new URL('./create-project.mjs', import.meta.url);
+  const generator = fileURLToPath(new URL('./create-project.mjs', import.meta.url));
   const invalid = spawnSync(
     process.execPath,
-    [generator.pathname, 'bad', '--database', 'postgresql://private-password'],
+    [generator, 'bad', '--database', 'postgresql://private-password'],
     { cwd, encoding: 'utf8' },
   );
   assert.equal(invalid.status, 1);
@@ -300,7 +301,7 @@ test('CLI accepts database choice but never echoes rejected secret arguments', a
   assert.doesNotMatch(invalid.stderr, /private-password/);
   const secretFlag = spawnSync(
     process.execPath,
-    [generator.pathname, 'bad', '--password=private-password'],
+    [generator, 'bad', '--password=private-password'],
     { cwd, encoding: 'utf8' },
   );
   assert.equal(secretFlag.status, 1);
