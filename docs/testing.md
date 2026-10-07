@@ -2,12 +2,20 @@
 
 ## 자동 검사
 
+`pnpm env:setup`의 기본 external은 별도 TEST_DATABASE_URL을 직접 설정한다. 로컬 Docker 테스트 환경을 새로 만들 때는 `pnpm env:setup --database local`을 먼저 실행한다. 기존 `.env`는 덮어쓰지 않는다.
+
 ```sh
-pnpm check
+# POSIX shell: replace these with the real production API when validating a release.
+NEXT_PUBLIC_API_BASE_URL=https://api.example.com/api/v1 \
+EXPO_PUBLIC_API_BASE_URL=https://api.example.com/api/v1 \
+VITE_API_BASE_URL=https://api.example.com/api/v1 pnpm check
+# Optional local test DB; configure TEST_DATABASE_URL separately for external DB.
 docker compose --profile test up -d --wait postgres-test
 pnpm test:integration
 pnpm test:e2e
 ```
+
+fresh `env:setup`은 HTTP localhost 개발 주소를 만든다. production build를 포함하는 `check`에는 위처럼 세 HTTPS public API URL을 주입한다. `api.example.com`은 컴파일 검사 예시이며 연결 가능한 운영 API의 증거가 아니다. release UI 검증에는 실제 API 주소가 필요하다. PowerShell에서는 각 변수를 `$env:NEXT_PUBLIC_API_BASE_URL`, `$env:EXPO_PUBLIC_API_BASE_URL`, `$env:VITE_API_BASE_URL`에 먼저 설정하고 `pnpm check`를 실행한다.
 
 `check`는 lint, 타입, 단위 테스트, JS build 및 package boundary 검사다. 자동 API integration은 HTTP 검증·권한·CRUD·refresh/logout을 실제 PostgreSQL에서 확인한다. Playwright는 브라우저 가입/로그인과 Project CRUD를 확인한다.
 

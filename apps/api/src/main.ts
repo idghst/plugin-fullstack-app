@@ -4,7 +4,11 @@ import { CONFIG, type AppConfig } from './config/environment';
 async function bootstrap() {
   const app = await createApp();
   const config = app.get<AppConfig>(CONFIG);
-  await app.listen(config.PORT, '0.0.0.0');
+  await app.listen(config.PORT, config.HOST);
+  const server = app.getHttpServer();
+  server.requestTimeout = 30_000;
+  server.headersTimeout = 15_000;
+  server.keepAliveTimeout = 5_000;
   console.log(
     JSON.stringify({
       level: 'info',

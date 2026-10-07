@@ -10,6 +10,8 @@ Tauri capability는 필요한 권한만 명시한다. 파일 시스템, shell, U
 
 `VITE_API_BASE_URL`은 public API URL이다. CORS의 origin과 Tauri CSP connect-src를 함께 검토한다. source app의 현재 Tauri 설정을 확인하며 넓은 wildcard로 무조건 해결하지 않는다.
 
+production frontend/native build는 HTTPS API URL을 요구한다. `build:native`가 지정한 API origin만 연결하도록 generated CSP config를 생성한다. `.tauri-build`는 복사/커밋하지 않는다. release 설치 파일은 GitHub Releases에 배포할 수 있으며 macOS 서명/notarization, Windows 서명 비용과 경고를 [deployment](deployment.md)에서 검토한다. unsigned build나 Vite 성공을 정식 설치 검증으로 설명하지 않는다.
+
 ## 실행과 확인
 
 ```sh

@@ -79,6 +79,10 @@ Domain은 framework를 모른다. 업무 조건, Project model, Repository inter
 
 Controller에서 검증한 Project 입력이 use case로 들어간다. 서버가 인증한 user id를 repository 조회 조건에 포함하며 다른 사용자 소유의 id는 존재 여부를 노출하지 않는 404로 처리한다. DB는 user/project/session 관계와 제약을 저장한다.
 
+## 배포 경계
+
+웹은 static export를 Cloudflare Pages에 배포하고 브라우저에서 API 데이터를 받아 동적으로 표시한다. Expo/Tauri도 같은 HTTPS NestJS API를 쓴다. API는 기존 서버의 non-root Node 프로세스로 운영하며 DB는 기존 private Supabase/PostgreSQL이다. Docker는 local profile에서만 필수다. runtime 예시와 무료 조건은 [deployment](deployment.md)를 참고한다. API 시작은 migration을 자동 실행하지 않으며 DB URL/비밀키를 클라이언트에 보내지 않는다.
+
 ## 확장
 
 Redis는 캐시·분산 rate limit 같은 실제 요구가 있을 때, object storage는 파일 upload 요구가 있을 때 추가한다. 결제/알림/검색/AI/라이선스도 외부 서비스와 업무 규칙이 확인된 뒤 port를 설계한다. 필요한 경우 feature의 Application port를 추가하고 adapter를 API composition root에서 주입한다. 공통의 추상 BaseRepository나 빈 module을 미리 만들지 않는다.

@@ -1,0 +1,30 @@
+# Linux example. Create a dedicated fullstack OS user and install/build the API at /srv/fullstack.
+# Keep /etc/fullstack/api.env root-owned, mode 0600; never commit that file.
+# Environment: NODE_ENV=production, HOST=127.0.0.1, PORT=4000, TRUST_PROXY=off.
+# Set TRUST_PROXY=loopback ONLY when a loopback proxy replaces client forwarding headers.
+[Unit]
+Description=Fullstack Starter API
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=fullstack
+Group=fullstack
+WorkingDirectory=/srv/fullstack
+EnvironmentFile=/etc/fullstack/api.env
+ExecStart=/usr/bin/node /srv/fullstack/apps/api/dist/main.js
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

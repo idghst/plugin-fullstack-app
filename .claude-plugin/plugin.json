@@ -1,7 +1,7 @@
 {
   "name": "fullstack-starter",
-  "version": "0.1.0",
-  "description": "Architecture and implementation workflow for a TypeScript web, mobile, desktop and API starter.",
+  "version": "0.2.0",
+  "description": "TypeScript fullstack workflow with existing PostgreSQL, static web and Docker-optional low-cost deployment.",
   "author": {
     "name": "Fullstack Starter contributors"
   },

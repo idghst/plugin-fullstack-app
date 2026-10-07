@@ -2,6 +2,8 @@ pnpm-lock.yaml
 node_modules
 dist
 .next
+apps/web/out
+apps/desktop/.tauri-build
 .expo
 .turbo
 target

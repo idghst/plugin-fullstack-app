@@ -1,4 +1,14 @@
-import { Body, Controller, Get, HttpCode, Inject, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Inject,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -9,6 +19,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
   ApiBadRequestResponse,
+  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 import { ZodSerializerDto, ZodValidationPipe } from 'nestjs-zod';
 import {
@@ -21,10 +32,14 @@ import {
 } from '../../../common/http/dto';
 import { AuthGuard, type AuthenticatedRequest } from './auth.guard';
 import { AuthService } from '../application/auth.service';
+import { AuthRateLimitGuard } from './auth-rate-limit.guard';
 
 @ApiTags('Authentication')
 @ApiBadRequestResponse({ type: ApiErrorDto })
 @ApiUnauthorizedResponse({ type: ApiErrorDto })
+@ApiTooManyRequestsResponse({ type: ApiErrorDto })
+@UseGuards(AuthRateLimitGuard)
+@UseInterceptors(AuthRateLimitGuard)
 @Controller('auth')
 export class AuthController {
   constructor(@Inject(AuthService) private readonly auth: AuthService) {}

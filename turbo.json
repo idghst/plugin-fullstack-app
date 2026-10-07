@@ -8,7 +8,19 @@
     "JWT_SECRET",
     "CORS_ORIGIN",
     "PORT",
-    "API_BASE_URL",
+    "HOST",
+    "TRUST_PROXY",
+    "DATABASE_MIGRATION_URL",
+    "DATABASE_SSL_MODE",
+    "DATABASE_SSL_CA_FILE",
+    "DATABASE_POOL_MAX",
+    "DATABASE_CONNECTION_TIMEOUT_MS",
+    "DATABASE_IDLE_TIMEOUT_MS",
+    "DATABASE_QUERY_TIMEOUT_MS",
+    "AUTH_RATE_LIMIT_WINDOW_MS",
+    "AUTH_RATE_LIMIT_MAX",
+    "AUTH_RATE_LIMIT_MAX_KEYS",
+    "AUTH_MAX_CONCURRENT_REQUESTS",
     "NEXT_PUBLIC_API_BASE_URL",
     "EXPO_PUBLIC_API_BASE_URL",
     "VITE_API_BASE_URL"
@@ -17,7 +29,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", "out/**", ".next/**", "!.next/cache/**"]
     },
     "@starter/ui#build": { "dependsOn": ["^build"], "outputs": [] },
     "@starter/project-ui#build": { "dependsOn": ["^build"], "outputs": [] },

@@ -14,6 +14,8 @@ access/refresh/user를 한 JSON record로 저장해 refresh 회전 중 일부 cr
 
 JWT secret·DB URL·서비스 비밀키를 EXPO_PUBLIC 변수에 넣지 않는다. API unavailable 상태와 session restore 실패도 화면으로 처리한다.
 
+production 빌드는 HTTPS API URL을 요구한다. 운영 배포 기본은 Expo SDK 로컬 빌드와 스토어 업데이트이며 EAS cloud build/OTA는 선택이다. `prebuild:release` 후 Xcode archive/sign/upload 또는 Android release signing과 Gradle bundleRelease를 수행한다. `ios:release`/`android:release` 실행이 스토어 배포 완료를 뜻하지 않는다. EAS의 무료 quota·사용 용도·매출 조건은 [deployment](deployment.md)를 확인한다.
+
 ## 실행
 
 ```sh

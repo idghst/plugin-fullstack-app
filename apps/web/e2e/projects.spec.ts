@@ -1,4 +1,18 @@
 import { expect, test } from '@playwright/test';
+test('loads the static workspace and checks API health in the browser', async ({ page }) => {
+  await page.route('**/health', (route) => route.fulfill({ status: 200, body: '{"status":"ok"}' }));
+  await page.goto('/');
+  await expect(page.getByText(/Service online/)).toBeVisible();
+  await expect(page.getByLabel('Email', { exact: true })).toBeEnabled();
+});
+
+test('keeps sign-in available when the API health request fails', async ({ page }) => {
+  await page.route('**/health', (route) => route.abort());
+  await page.goto('/');
+  await expect(page.getByText(/Service unavailable/)).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Sign in', exact: true })).toBeEnabled();
+});
+
 test('sign up, create, edit, delete and sign in again', async ({ page }) => {
   const email = `browser-${Date.now()}-${Math.random().toString(36).slice(2)}@example.test`;
   const password = 'Browser-test-password-2026!';

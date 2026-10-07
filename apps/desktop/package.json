@@ -7,13 +7,14 @@
     "dev": "vite --host 0.0.0.0 --port 5173 --strictPort",
     "dev:native": "tauri dev",
     "build": "tsc --noEmit && vite build",
-    "build:native": "tauri build",
+    "build:native": "node ../../tooling/scripts/prepare-desktop-config.mjs && tauri build --config .tauri-build/production.json",
     "preview": "vite preview --host 0.0.0.0 --port 5173",
     "typecheck": "tsc --noEmit",
     "test": "tsc --noEmit",
     "tauri": "tauri"
   },
   "dependencies": {
+    "@starter/config": "workspace:*",
     "@starter/ui": "workspace:*",
     "@starter/project-ui": "workspace:*",
     "@starter/api-client": "workspace:*",

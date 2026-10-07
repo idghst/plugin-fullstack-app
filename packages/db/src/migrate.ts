@@ -3,7 +3,7 @@ import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { createDatabase } from './index';
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
+  const connectionString = process.env.DATABASE_MIGRATION_URL || process.env.DATABASE_URL;
   if (!connectionString) throw new Error('DATABASE_URL is required.');
   const { db, pool } = createDatabase(connectionString);
   try {
@@ -13,7 +13,7 @@ async function main() {
     await pool.end();
   }
 }
-void main().catch((error: unknown) => {
-  console.error(error instanceof Error ? error.message : 'Migration failed');
+void main().catch(() => {
+  console.error('Database migration failed. Check configuration and migration permissions.');
   process.exitCode = 1;
 });

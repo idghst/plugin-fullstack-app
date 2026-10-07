@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "fullstack-starter",
-  "version": "0.1.0",
-  "description": "Architecture and implementation workflow for a TypeScript web, mobile, desktop and API starter.",
+  "version": "0.2.0",
+  "description": "TypeScript fullstack workflow with existing PostgreSQL, static web and Docker-optional low-cost deployment.",
   "author": {
     "name": "Fullstack Starter contributors"
   },
@@ -12,7 +12,7 @@
       "interface": {
         "displayName": "Fullstack Starter",
         "shortDescription": "Build fullstack apps",
-        "longDescription": "Build and maintain a pnpm/Turborepo starter with Next.js, Expo, Tauri, NestJS, PostgreSQL and Drizzle. Reuse contracts, keep domain rules separate from adapters, and verify changes on the actual target platform.",
+        "longDescription": "Build and maintain Next.js static web, Expo, Tauri and NestJS with shared contracts and existing PostgreSQL/Drizzle. Choose external or local DB, keep Docker optional, and verify secure low-cost deployment on actual platforms.",
         "developerName": "Fullstack Starter contributors",
         "category": "Developer Tools",
         "capabilities": ["Read", "Write"],

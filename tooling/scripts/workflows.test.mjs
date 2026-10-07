@@ -54,7 +54,7 @@ test('env setup never overwrites a developer existing file', async (t) => {
   assert.equal(await readFile(join(root, '.env'), 'utf8'), 'JWT_SECRET=existing\n');
 });
 
-test('web env respects app example names and includes server API URL without secrets', async (t) => {
+test('web env respects app example public names without server variables or secrets', async (t) => {
   assert.equal(typeof setupEnvironment, 'function', 'env setup must exist');
   const root = await temp(t);
   await writeFile(
@@ -68,7 +68,7 @@ test('web env respects app example names and includes server API URL without sec
   );
   await setupEnvironment(root);
   const env = await readFile(join(root, 'apps/web/.env.local'), 'utf8');
-  assert.match(env, /API_BASE_URL=http/);
+  assert.doesNotMatch(env, /^API_BASE_URL=/m);
   assert.match(env, /NEXT_PUBLIC_API_URL=http/);
   assert.doesNotMatch(env, /JWT_SECRET|never-copy/);
 });

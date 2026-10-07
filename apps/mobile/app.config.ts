@@ -1,6 +1,6 @@
 import type { ExpoConfig } from 'expo/config';
 import { withAndroidManifest, type ConfigPlugin } from 'expo/config-plugins';
-import { z } from 'zod';
+import { apiBaseUrlSchema, productionApiBaseUrlSchema } from '@starter/config';
 import { loadEnvFile } from 'node:process';
 import { join } from 'node:path';
 // Expo evaluates dynamic config before its export command loads dotenv.
@@ -12,16 +12,9 @@ for (const file of ['.env.local', '.env']) {
     if (!(error instanceof Error && 'code' in error && error.code === 'ENOENT')) throw error;
   }
 }
-const api = new URL(z.url().parse(process.env.EXPO_PUBLIC_API_BASE_URL));
-if (
-  !['http:', 'https:'].includes(api.protocol) ||
-  api.username ||
-  api.password ||
-  api.search ||
-  api.hash ||
-  !api.pathname.endsWith('/api/v1')
-)
-  throw new Error('EXPO_PUBLIC_API_BASE_URL must be an HTTP(S) URL ending in /api/v1');
+const production = process.env.NODE_ENV === 'production';
+const schema = production ? productionApiBaseUrlSchema : apiBaseUrlSchema;
+const api = new URL(schema.parse(process.env.EXPO_PUBLIC_API_BASE_URL));
 const config: ExpoConfig = {
   name: 'Project Studio',
   slug: 'project-studio',
@@ -33,7 +26,7 @@ const config: ExpoConfig = {
   ios: {
     bundleIdentifier: 'com.starter.projectstudio',
     supportsTablet: true,
-    infoPlist: { NSAppTransportSecurity: { NSAllowsLocalNetworking: true } },
+    infoPlist: { NSAppTransportSecurity: { NSAllowsLocalNetworking: !production } },
   },
   android: { package: 'com.starter.projectstudio' },
   web: { bundler: 'metro', output: 'static' },

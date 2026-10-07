@@ -12,7 +12,7 @@ description: Use when creating or maintaining a TypeScript fullstack product wit
 1. 작업 대상 저장소의 `AGENTS.md`, `package.json`, `pnpm-workspace.yaml`을 읽는다. 이 플러그인이 설치된 경로와 사용자 프로젝트 경로를 혼동하지 않는다.
 2. 요청을 새 시스템 구축(SI), 기존 시스템 유지보수(SM), 플랫폼 작업, 생성기 작업 중 하나로 정하고 필요한 실제 파일을 확인한다.
 3. 공통 경계는 [architecture](references/architecture.md), 코드 규칙은 [conventions](references/conventions.md), 검증은 [testing](references/testing.md)을 따른다.
-4. 필요한 reference만 읽는다: [backend](references/backend.md), [frontend](references/frontend.md), [mobile](references/mobile.md), [desktop](references/desktop.md), [database](references/database.md).
+4. 필요한 reference만 읽는다: [backend](references/backend.md), [frontend](references/frontend.md), [mobile](references/mobile.md), [desktop](references/desktop.md), [database](references/database.md), [runtime/deployment](references/deployment.md).
 
 작업 명세는 [feature spec 완성 예시](templates/feature-spec.md)를 해당 요청에 맞게 작성한다. manifest와 실제 명령을 빠르게 확인할 때는 [read-only inspector](scripts/inspect-project.mjs)를 실행한다. 스크립트는 private env를 읽거나 명령을 실행하지 않는다.
 
@@ -34,9 +34,11 @@ node /absolute/plugin/path/skills/fullstack-starter/scripts/inspect-project.mjs 
 
 ## 생성·플러그인 작업
 
-원본 저장소에서 `pnpm create:project my-service`를 실행하면 현재 디렉터리 아래 새 프로젝트를 만든다. `--no-web`, `--no-mobile`, `--no-desktop`과 `--interactive`를 지원한다. 기존 경로를 덮어쓰거나 폴더 밖으로 나가지 않는다. 인증/DB는 샘플의 필수 경계이므로 `--no-auth`와 `--no-database`는 오류로 중단한다. 이 플래그를 작동한다고 설명하지 않는다.
+원본 저장소에서 `pnpm create:project my-service`를 실행하면 현재 디렉터리 아래 새 프로젝트를 만든다. `--database external|local`은 기본 external(기존 Supabase/PostgreSQL)이며 비밀값 없는 `starter.config.json`에 기록한다. `--no-web`, `--no-mobile`, `--no-desktop`과 `--interactive`를 지원한다. 기존 경로를 덮어쓰거나 폴더 밖으로 나가지 않는다. 인증/DB는 필수 경계이므로 `--no-auth`와 `--no-database`는 오류로 중단한다.
 
-생성 후 `pnpm install`, `pnpm env:setup`, PostgreSQL 시작, migration, seed 순서로 진행한다. UI 앱을 제외하면 lockfile을 재생성해야 한다. package namespace `@starter/*`는 내부 계약이므로 root 프로젝트 이름만 바꾼다.
+생성 후 `pnpm install`, `pnpm env:setup`을 실행하고 private `.env`에 외부 DB URL과 별도 test DB를 설정한다. local Docker는 사용자가 선택할 때만 시작한다. 기존 파일을 보존하고 CLI에 접속 비밀값을 받지 않는다. 대상 DB·migration SQL·권한·백업을 검토한 뒤 명시적으로 migration한다. 개발/API 시작에서 migration·seed를 자동 실행하지 않는다. UI 앱을 제외하면 lockfile을 재생성한다. package namespace `@starter/*`는 내부 계약이므로 root 이름만 바꾼다.
+
+배포 기본은 Cloudflare 정적 웹, 기존 서버 Node API, 기존 private Supabase다. 브라우저·Expo·Tauri는 공통 HTTPS API를 사용하며 정적 웹도 DB 기반 동적 UI를 지원한다. 무료는 기존 서버/도메인 자원 여유 조건이다. Vercel Hobby 상업 제한과 EAS의 quota/매출 조건을 검토하고, 모바일 로컬 Xcode/Gradle 빌드·스토어 업데이트 및 GitHub Releases 설치 파일 흐름을 준비한다. [runtime/deployment](references/deployment.md)을 읽고 실제 공개 운영 환경을 검증한다. 계정/DNS/운영 DB를 자동 변경하거나 무중단/영구 무료를 약속하지 않는다.
 
 플러그인 수정 시 root `plugin.json`, `.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`의 name/version/description을 함께 갱신하고 `pnpm plugin:package`로 검증·패키징한다. 설치·계정 업로드·디렉터리 공개는 사용자가 요청한 범위에서만 수행한다.
 

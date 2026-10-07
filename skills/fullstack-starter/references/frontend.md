@@ -1,6 +1,6 @@
 # Frontend Reference
 
-Web은 Next.js App Router와 React다. 기본 페이지는 서버 경계를 유지하고 로그인·Project CRUD 상호작용은 client component로 둔다. shared React 화면은 `packages/project-ui`, shadcn 기반 button/input 등 DOM primitive는 `packages/ui`다.
+Web은 Next.js App Router와 React의 static export이며 빌드 결과는 `apps/web/out`이다. health 조회와 로그인·Project CRUD는 브라우저에서 공통 API를 호출한다. 정적 호스팅에도 DB 기반 동적 화면을 제공한다. SSR/Server Actions/서버 비밀값이 필요한 기능은 별도 runtime과 비용을 검토한다. shared React 화면은 `packages/project-ui`, shadcn 기반 DOM primitive는 `packages/ui`다.
 
 ## 데이터와 상태
 
@@ -12,7 +12,7 @@ API 호출은 `@starter/api-client`에서 가져온 client를 사용하고 token
 
 ## 경계
 
-`API_BASE_URL`은 server config이고 `NEXT_PUBLIC_API_BASE_URL`은 browser에 노출되는 URL이다. DB URL과 JWT secret을 public 변수로 전달하지 않는다. server import가 client bundle에 들어가지 않게 use client 경계를 확인한다.
+`NEXT_PUBLIC_API_BASE_URL`은 browser에 노출되며 production build는 HTTPS URL을 요구한다. 주소 변경 후 재빌드한다. `API_BASE_URL` server env는 웹에서 사용하지 않는다. DB URL과 JWT secret을 public 변수로 전달하지 않는다. server import가 client bundle에 들어가지 않게 경계를 확인한다.
 
 UI에 `@starter/db`, NestJS, Node crypto를 import하지 않는다. auth 권한은 서버가 결정한다. client route guard만으로 데이터를 보호했다고 판단하지 않는다.
 

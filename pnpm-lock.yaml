@@ -110,6 +110,9 @@ importers:
       '@starter/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@starter/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@starter/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -171,6 +174,9 @@ importers:
       '@starter/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@starter/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@starter/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
@@ -235,6 +241,9 @@ importers:
       '@starter/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@starter/config':
+        specifier: workspace:*
+        version: link:../../packages/config
       '@starter/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

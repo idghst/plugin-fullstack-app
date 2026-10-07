@@ -9,7 +9,7 @@ RUN pnpm --filter @starter/api... build
 RUN pnpm --filter @starter/api deploy --prod /app
 
 FROM node:22-alpine AS runtime
-ENV NODE_ENV=production PORT=4000
+ENV NODE_ENV=production PORT=4000 HOST=0.0.0.0
 WORKDIR /app
 COPY --from=build --chown=node:node /app ./
 USER node

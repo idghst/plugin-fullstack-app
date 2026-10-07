@@ -23,6 +23,8 @@ const excludedDirectories = new Set([
   '.expo',
   '.cache',
   'dist',
+  'out',
+  '.tauri-build',
   'build',
   'coverage',
   'target',
@@ -58,7 +60,12 @@ export async function generateProject({
   cwd = process.cwd(),
   name,
   omit = [],
+  database = 'external',
 }) {
+  if (!['external', 'local'].includes(database))
+    throw new Error(
+      'Database profile must be external or local. Set private connection URLs after generation.',
+    );
   if (typeof name !== 'string' || !/^[a-z][a-z0-9-]{0,63}$/.test(name))
     throw new Error(
       'Project name must be 1–64 lowercase letters, digits or hyphens and begin with a letter.',
@@ -102,6 +109,11 @@ export async function generateProject({
           if (segments[0] === 'apps' && omit.includes(segments[1])) return false;
           if (omit.includes('desktop') && segments.join('/') === '.github/workflows/native.yml')
             return false;
+          if (
+            omit.includes('desktop') &&
+            /^tooling\/scripts\/prepare-desktop-config(?:\.test)?\.mjs$/.test(segments.join('/'))
+          )
+            return false;
           const file = segments.at(-1);
           if (file.startsWith('.env') && !/^\.env(?:\.[a-z0-9-]+)*\.example$/.test(file))
             return false;
@@ -128,6 +140,10 @@ export async function generateProject({
     if (omit.includes('mobile')) delete root.scripts?.['dev:mobile'];
     if (omit.includes('desktop')) delete root.scripts?.['dev:desktop'];
     await writeFile(packageFile, `${JSON.stringify(root, null, 2)}\n`);
+    await writeFile(
+      join(stage, 'starter.config.json'),
+      `${JSON.stringify({ database }, null, 2)}\n`,
+    );
     if (omit.length) await rm(join(stage, 'pnpm-lock.yaml'), { force: true });
     // mkdir is exclusive: another creator cannot reserve the destination first.
     try {
@@ -154,16 +170,23 @@ async function main() {
   const args = process.argv.slice(2);
   if (args.includes('--help')) {
     console.log(
-      'Usage: pnpm create:project <project-name> [--no-web] [--no-mobile] [--no-desktop] [--interactive]\nAuth and PostgreSQL are required by this sample; --no-auth and --no-database fail explicitly.',
+      'Usage: pnpm create:project <project-name> [--database external|local] [--no-web] [--no-mobile] [--no-desktop] [--interactive]\nDatabase defaults to external (existing Supabase/PostgreSQL). Auth and PostgreSQL are required; --no-auth and --no-database fail explicitly.',
     );
     return;
   }
   let name;
+  let database;
   const omit = [];
-  for (const arg of args) {
+  for (let index = 0; index < args.length; index++) {
+    const arg = args[index];
     if (arg === '--interactive') continue;
-    if (/^--no-(web|mobile|desktop|auth|database)$/.test(arg)) omit.push(arg.slice(5));
-    else if (arg.startsWith('-') || name) throw new Error(`Unknown argument: ${arg}`);
+    if (arg === '--database') {
+      database = args[++index];
+      if (!['external', 'local'].includes(database))
+        throw new Error('Database profile must be external or local.');
+    } else if (/^--no-(web|mobile|desktop|auth|database)$/.test(arg)) omit.push(arg.slice(5));
+    else if (arg.startsWith('-') || name)
+      throw new Error('Unknown argument. See --help; connection secrets belong in private .env.');
     else name = arg;
   }
   if (args.includes('--interactive')) {
@@ -174,6 +197,14 @@ async function main() {
     const prompt = createInterface({ input: process.stdin, output: process.stdout });
     try {
       name ||= (await prompt.question('Project name: ')).trim();
+      if (!database) {
+        const choice = (
+          await prompt.question(
+            'Database: existing Supabase/PostgreSQL or local Docker? [external/local, default external] ',
+          )
+        ).trim();
+        database = choice || 'external';
+      }
       for (const app of ['web', 'mobile', 'desktop']) {
         if (
           !omit.includes(app) &&
@@ -185,9 +216,9 @@ async function main() {
       prompt.close();
     }
   }
-  const destination = await generateProject({ name, omit });
+  const destination = await generateProject({ name, omit, database });
   console.log(
-    `Created ${destination}\nNext: cd ${name} && pnpm install && pnpm env:setup\nThen follow README.md for PostgreSQL migration and development.`,
+    `Created ${destination}\nNext: cd ${name} && pnpm install && pnpm env:setup\nDatabase profile: ${database || 'external'}. Configure private connection settings and review docs/database.md before any migration. No Docker or database operation was run.`,
   );
 }
 

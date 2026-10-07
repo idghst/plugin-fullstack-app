@@ -13,7 +13,7 @@
 | `.claude-plugin/marketplace.json`   | Claude marketplace catalog                              |
 | `skills/fullstack-starter/SKILL.md` | 작업 흐름과 reference navigation                        |
 
-모든 manifest의 name은 `fullstack-starter`, version은 `0.1.0`이다. root portable에는 top-level skills/mcpServers/apps/interface를 넣지 않고 `skills/` fixed location과 `extensions.com.openai.interface`를 사용한다. Codex overlay의 경로는 plugin root 기준이다.
+모든 manifest의 name은 `fullstack-starter`, version은 `0.2.0`이다. 외부 DB 초기화, 정적 웹·공통 API, Docker 선택 운영과 로컬 모바일 빌드 지침을 포함한다. [배포 문서](deployment.md)를 참고한다. root portable에는 top-level skills/mcpServers/apps/interface를 넣지 않고 `skills/` fixed location과 `extensions.com.openai.interface`를 사용한다. Codex overlay의 경로는 plugin root 기준이다.
 
 형식 기준은 [Agent Plugins schema](https://agent-plugins.org/schemas/1.0.0/plugin.schema.json)다. compatibility host별 설치 흐름은 호스트 공식 문서와 설치된 CLI의 help를 확인한다.
 
@@ -84,7 +84,7 @@ Claude Code에서도 같은 GitHub source의 HTTPS clone, catalog validation, ma
 
 ```sh
 pnpm plugin:package
-tar -tzf artifacts/fullstack-starter-0.1.0.tar.gz
+tar -tzf artifacts/fullstack-starter-0.2.0.tar.gz
 ```
 
 패키저는 manifest identity와 version, 30자 이하 subtitle, 스킬 frontmatter를 검사하고, skill·references·template·read-only script·hidden compatibility manifest·전용 README·LICENSE만 압축한다. Node.js builtins로 gzip/tar를 생성한다. source app, DB dump, env, cache, dependencies, symlink를 포함하지 않는다. 이미 같은 archive가 있으면 오류로 중단하며 덮어쓰지 않는다.

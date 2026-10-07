@@ -24,3 +24,5 @@ Zod DTO는 shared contracts에서 만들고 validation, serialization, OpenAPI�
 환경은 서버 시작 시 검증한다. JWT secret은 최소 길이를 갖는 무작위 값이고 DB URL은 server-only다. CORS는 구체적인 허용 origin을 사용한다. 새 인증 endpoint에는 rate limit, account recovery, 이메일 검증 같은 production 요구를 별도로 검토한다.
 
 API를 바꾸면 contracts, client, 소비자, integration을 함께 확인한다. 테스트는 development와 다른 PostgreSQL DB를 사용하고 자신이 만든 계정/Project만 정리한다.
+
+기본 운영은 기존 서버에서 non-root Node 프로세스 + systemd + HTTPS 프록시/Tunnel이다. Docker는 필수가 아니다. production origin과 proxy trust를 실제 경로에 맞추고 rate limit의 단일 프로세스 범위를 확인한다. runtime/migration 계정과 private DB를 분리하고 자동 startup migration을 넣지 않는다. 자원·백업·복원·실제 외부 호출 검증은 [deployment](deployment.md)를 확인한다.

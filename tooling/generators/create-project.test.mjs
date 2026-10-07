@@ -261,3 +261,76 @@ test('rejects oversized unrelated files and leaves destination absent after fail
   const destination = await generateProject({ ...options, name: 'lean-service' });
   await assert.rejects(access(join(destination, 'dump.bin')), { code: 'ENOENT' });
 });
+
+test('records external default and explicit local profile without copying source selection', async (t) => {
+  const options = await fixture(t);
+  await writeFile(
+    join(options.source, 'starter.config.json'),
+    '{"database":"local","secret":"never-copy"}',
+  );
+  const external = await generateProject({ ...options, name: 'external-service' });
+  const local = await generateProject({ ...options, name: 'local-service', database: 'local' });
+  assert.deepEqual(JSON.parse(await readFile(join(external, 'starter.config.json'), 'utf8')), {
+    database: 'external',
+  });
+  assert.deepEqual(JSON.parse(await readFile(join(local, 'starter.config.json'), 'utf8')), {
+    database: 'local',
+  });
+});
+
+test('rejects database addresses as profile flags before writing destination', async (t) => {
+  const options = await fixture(t);
+  await assert.rejects(
+    generateProject({ ...options, name: 'bad-profile', database: 'postgresql://private' }),
+    /external.*local/,
+  );
+  await assert.rejects(access(join(options.cwd, 'bad-profile')), { code: 'ENOENT' });
+});
+
+test('CLI accepts database choice but never echoes rejected secret arguments', async (t) => {
+  const { cwd } = await fixture(t);
+  const generator = new URL('./create-project.mjs', import.meta.url);
+  const invalid = spawnSync(
+    process.execPath,
+    [generator.pathname, 'bad', '--database', 'postgresql://private-password'],
+    { cwd, encoding: 'utf8' },
+  );
+  assert.equal(invalid.status, 1);
+  assert.match(invalid.stderr, /external or local/);
+  assert.doesNotMatch(invalid.stderr, /private-password/);
+  const secretFlag = spawnSync(
+    process.execPath,
+    [generator.pathname, 'bad', '--password=private-password'],
+    { cwd, encoding: 'utf8' },
+  );
+  assert.equal(secretFlag.status, 1);
+  assert.doesNotMatch(secretFlag.stderr, /private-password/);
+});
+
+test('copies runtime templates but excludes static output and generated desktop configuration', async (t) => {
+  const options = await fixture(t);
+  for (const file of [
+    'tooling/deploy/api.service',
+    'apps/web/out/index.html',
+    'apps/desktop/.tauri-build/production.json',
+  ]) {
+    await mkdir(join(options.source, file, '..'), { recursive: true });
+    await writeFile(join(options.source, file), 'fixture');
+  }
+  const destination = await generateProject({ ...options, name: 'runtime-service' });
+  await access(join(destination, 'tooling/deploy/api.service'));
+  await assert.rejects(access(join(destination, 'apps/web/out')), { code: 'ENOENT' });
+  await assert.rejects(access(join(destination, 'apps/desktop/.tauri-build')), { code: 'ENOENT' });
+});
+
+test('omitting desktop removes its production tooling and source-specific tests', async (t) => {
+  const options = await fixture(t);
+  await mkdir(join(options.source, 'tooling/scripts'), { recursive: true });
+  for (const filename of ['prepare-desktop-config.mjs', 'prepare-desktop-config.test.mjs'])
+    await writeFile(join(options.source, 'tooling/scripts', filename), 'fixture');
+  const destination = await generateProject({ ...options, name: 'no-desktop', omit: ['desktop'] });
+  for (const filename of ['prepare-desktop-config.mjs', 'prepare-desktop-config.test.mjs'])
+    await assert.rejects(access(join(destination, 'tooling/scripts', filename)), {
+      code: 'ENOENT',
+    });
+});

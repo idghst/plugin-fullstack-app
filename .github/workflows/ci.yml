@@ -21,8 +21,12 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm env:setup
+      - run: pnpm env:setup --database local
       - run: pnpm check
+        env:
+          NEXT_PUBLIC_API_BASE_URL: https://api.example.com/api/v1
+          EXPO_PUBLIC_API_BASE_URL: https://api.example.com/api/v1
+          VITE_API_BASE_URL: https://api.example.com/api/v1
       - run: docker compose --profile test up -d --wait
       - run: pnpm db:migrate && pnpm db:migrate:test
       - run: pnpm test:integration

@@ -1,20 +1,11 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { z } from 'zod';
+import { apiBaseUrlSchema, productionApiBaseUrlSchema } from '@starter/config';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
-  const value = z.url().parse(env.VITE_API_BASE_URL);
-  const url = new URL(value);
-  if (
-    !['http:', 'https:'].includes(url.protocol) ||
-    url.username ||
-    url.password ||
-    url.search ||
-    url.hash ||
-    !url.pathname.endsWith('/api/v1')
-  )
-    throw new Error('VITE_API_BASE_URL must be an HTTP(S) URL ending in /api/v1');
+  const schema = mode === 'production' ? productionApiBaseUrlSchema : apiBaseUrlSchema;
+  schema.parse(process.env.VITE_API_BASE_URL ?? env.VITE_API_BASE_URL);
   return {
     plugins: [react(), tailwindcss()],
     clearScreen: false,

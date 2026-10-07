@@ -1,0 +1,9 @@
+# Named tunnel example; replace the hostname and tunnel identity after provisioning.
+# Install cloudflared as an OS service, without Docker. Credentials stay on the host.
+# Only the API is exposed. Do not expose the PostgreSQL port through this tunnel.
+tunnel: replace-with-named-tunnel-id
+credentials-file: /etc/cloudflared/tunnel-credentials.json
+ingress:
+  - hostname: api.example.com
+    service: http://127.0.0.1:4000
+  - service: http_status:404

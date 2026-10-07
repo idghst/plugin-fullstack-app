@@ -19,13 +19,17 @@ class AppModule {}
 export async function createApp() {
   const app = await NestFactory.create(AppModule, { logger: false });
   const config = app.get<AppConfig>(CONFIG);
+  app
+    .getHttpAdapter()
+    .getInstance()
+    .set('trust proxy', config.TRUST_PROXY === 'loopback' ? 'loopback' : false);
   app.setGlobalPrefix('api/v1', { exclude: [{ path: 'health', method: RequestMethod.GET }] });
   app.enableShutdownHooks();
   app.use(helmet());
   app.enableCors({
     origin: config.CORS_ORIGIN,
     credentials: false,
-    exposedHeaders: ['x-request-id'],
+    exposedHeaders: ['x-request-id', 'retry-after'],
   });
   app.use((request: Request & { requestId?: string }, response: Response, next: NextFunction) => {
     const supplied = request.headers['x-request-id'];

@@ -6,6 +6,8 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/dist/**',
       '**/.next/**',
+      '**/out/**',
+      '**/.tauri-build/**',
       '**/.expo/**',
       '**/.turbo/**',
       '**/target/**',

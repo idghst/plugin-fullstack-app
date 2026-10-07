@@ -7,12 +7,16 @@
     "dev": "expo start",
     "ios": "expo run:ios",
     "android": "expo run:android",
+    "ios:release": "node scripts/run-production.mjs run:ios --configuration Release",
+    "android:release": "node scripts/run-production.mjs run:android --variant release",
+    "prebuild:release": "node scripts/run-production.mjs prebuild --no-install",
     "web": "expo start --web",
     "build": "expo export --platform all",
     "typecheck": "tsc --noEmit",
     "test": "tsc --noEmit"
   },
   "dependencies": {
+    "@starter/config": "workspace:*",
     "@starter/api-client": "workspace:*",
     "@starter/auth": "workspace:*",
     "@starter/contracts": "workspace:*",

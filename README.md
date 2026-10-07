@@ -20,21 +20,31 @@
 
 ## 시작
 
-Node.js 22.13 이상과 pnpm 10.32.1, Docker Compose가 필요하다. 아래는 저장소 루트에서 실행한다.
+Node.js 22.13 이상과 pnpm 10.32.1이 필요하다. 기본 DB는 **기존 Supabase/PostgreSQL**이며 Docker는 로컬 DB를 직접 선택할 때만 필요하다. 아래는 저장소 루트에서 실행한다.
 
 ```sh
 corepack enable
 corepack prepare pnpm@10.32.1 --activate
 pnpm install
 pnpm env:setup
-docker compose up -d --wait postgres
+# private .env에 DATABASE_URL과 별도 TEST_DATABASE_URL을 설정한다.
+# 대상 DB와 migration SQL을 검토한 뒤 명시적으로 실행한다.
 pnpm db:migrate
 pnpm dev
 ```
 
 Git 저장소에서는 선택적으로 `pnpm hooks:install`을 실행해 staged 파일의 비밀값·형식 guard를 설치한다. 생성된 프로젝트에는 Git 이력이 없으므로 `git init` 후 설치한다. hook은 CI와 실제 검증을 대체하지 않는다.
 
-`env:setup`은 루트 `.env`에 무작위 JWT secret을 만들고 클라이언트에는 public API URL만 쓴다. 기존 파일은 덮어쓰지 않는다. 예시 DB 계정은 localhost 개발 전용이다. 운영 환경은 별도 secret과 DB 계정을 주입한다.
+`env:setup`은 루트 `.env`에 무작위 JWT secret을 만들고 DB URL은 빈 값으로 둔다. 클라이언트에는 public API URL만 쓴다. 기존 파일은 덮어쓰지 않으며 DB 시작·migration·seed를 실행하지 않는다. `pnpm dev`도 migration을 자동 실행하지 않는다. 기존 Supabase의 운영 데이터와 분리된 서비스용 DB와 별도 테스트 DB를 준비한다. 접속 주소만 바꾸어도 기존 Docker DB의 데이터가 자동 이전되지는 않는다.
+
+로컬 Docker DB는 새 환경에서 명시적으로 선택한다. `.env`가 이미 있으면 직접 접속 설정을 바꾼다.
+
+```sh
+pnpm env:setup --database local
+docker compose up -d --wait postgres
+pnpm db:migrate
+pnpm dev
+```
 
 | 서비스              | 로컬 주소                         |
 | ------------------- | --------------------------------- |
@@ -53,17 +63,20 @@ pnpm dev:mobile
 pnpm dev:desktop
 ```
 
-모바일 실기기에는 `localhost` 대신 개발 컴퓨터의 LAN IP가 필요하다. Android emulator는 보통 `http://10.0.2.2:4000/api/v1`를 사용한다. `apps/mobile/.env`의 `EXPO_PUBLIC_API_BASE_URL`을 바꾼 뒤 Metro를 다시 시작한다. iOS/Android native 실행에는 해당 SDK가, Tauri에는 Rust와 [OS prerequisites](https://v2.tauri.app/start/prerequisites/)가 필요하다.
+모바일 실기기에는 `localhost` 대신 개발 컴퓨터의 LAN IP가 필요하다. API는 기본적으로 loopback에만 바인딩하므로 LAN 개발 시에만 private `.env`의 `HOST=0.0.0.0`을 설정하고 방화벽을 개발 기기로 제한한다. Android emulator는 보통 `http://10.0.2.2:4000/api/v1`를 사용한다. `apps/mobile/.env`의 `EXPO_PUBLIC_API_BASE_URL`을 바꾼 뒤 API와 Metro를 다시 시작한다. iOS/Android native 실행에는 해당 SDK가, Tauri에는 Rust와 [OS prerequisites](https://v2.tauri.app/start/prerequisites/)가 필요하다.
 
 ## 새 프로젝트 생성
 
 ```sh
 pnpm create:project my-service
+pnpm create:project local-service --database local
 pnpm create:project api-service --no-web --no-mobile --no-desktop
 pnpm create:project my-service --interactive
 ```
 
 새 폴더는 **현재 디렉터리 아래** 생성하며 기존 경로를 덮어쓰지 않는다. root name만 바꾸고 `@starter/*` 내부 패키지 namespace는 유지한다. 앱을 제외하면 관련 dev/E2E 스크립트와 기존 lockfile을 제거하므로 새 폴더에서 `pnpm install`로 lockfile을 다시 만든다.
+
+`--database external|local`은 기본값이 `external`이며 비밀값 없는 `starter.config.json`에 선택을 기록한다. `--interactive`에서도 기존 Supabase/PostgreSQL과 로컬 Docker 중 선택한다. DB 접속 비밀값을 CLI 인자로 전달하지 않는다.
 
 인증과 DB는 현재 Project 샘플의 필수 요소다. `--no-auth`, `--no-database`는 원인을 표시하며 중단한다. DB 없는 가짜 저장소를 생성하거나 플래그를 무시하지 않는다. 선택 옵션과 복사 제외 기준은 [생성기 문서](docs/generator.md)에 있다.
 
@@ -86,7 +99,7 @@ pnpm create:project my-service --interactive
 | `pnpm audit`                   | production 의존성 보안 advisory 조회          |
 | `pnpm plugin:package`          | skill과 manifest를 tar.gz로 검증·패키징       |
 
-API 통합 테스트 전에 test DB를 시작한다. test DB는 별도 포트·DB 이름·임시 볼륨으로 development 데이터와 분리한다.
+API 통합 테스트는 `TEST_DATABASE_URL`의 별도 DB에서 실행한다. Docker를 선택하면 아래 test profile이 별도 포트·DB 이름·임시 볼륨을 제공한다.
 
 ```sh
 docker compose --profile test up -d --wait postgres-test
@@ -95,6 +108,14 @@ pnpm test:e2e
 ```
 
 `pnpm build`가 성공해도 native 앱의 실행·서명·설치가 확인된 것은 아니다. 플랫폼별 실제 검증 기준은 [테스트 문서](docs/testing.md)에 있다.
+
+fresh 환경의 public API URL은 HTTP localhost 개발용이다. production build를 포함하는 `pnpm check`/`pnpm build`에는 세 앱의 HTTPS URL이 필요하다. POSIX shell의 컴파일 검사 예시는 아래와 같다. release에는 실제 API 주소를 넣고 화면에서 접속을 확인한다. 예시 hostname은 실제 연결 검증을 뜻하지 않는다. PowerShell 설정은 [테스트 문서](docs/testing.md)를 따른다.
+
+```sh
+NEXT_PUBLIC_API_BASE_URL=https://api.example.com/api/v1 \
+EXPO_PUBLIC_API_BASE_URL=https://api.example.com/api/v1 \
+VITE_API_BASE_URL=https://api.example.com/api/v1 pnpm check
+```
 
 ## AI Skill / Plugin
 
@@ -124,7 +145,7 @@ Claude 세션에서는 `/plugin marketplace add idghst/plugin-fullstack-app`과 
 
 ```sh
 pnpm plugin:package
-tar -tzf artifacts/fullstack-starter-0.1.0.tar.gz
+tar -tzf artifacts/fullstack-starter-0.2.0.tar.gz
 ```
 
 아카이브는 `fullstack-starter/` 디렉터리 하나만 포함한다. 이미 같은 파일이 있으면 덮어쓰지 않으므로 이전 artifact를 이동한 뒤 다시 실행한다. 설치 예시와 공개 범위는 [플러그인 문서](docs/plugin.md)에 있다.
@@ -135,6 +156,7 @@ tar -tzf artifacts/fullstack-starter-0.1.0.tar.gz
 - [8개 기술 결정 ADR](docs/adr/README.md)
 - [SI/SM 작업 규칙](docs/conventions.md)
 - [DB와 migration](docs/database.md)
+- [무료 우선 배포와 운영](docs/deployment.md)
 - [플랫폼별 검증](docs/testing.md)
 - [생성기](docs/generator.md), [플러그인](docs/plugin.md)
 

@@ -7,6 +7,7 @@ import { PostgresAuthRepository } from './infrastructure/auth.repository';
 import { hashPassword, verifyPassword } from './infrastructure/password';
 import { AuthController } from './presentation/auth.controller';
 import { AuthGuard } from './presentation/auth.guard';
+import { AuthRateLimitGuard } from './presentation/auth-rate-limit.guard';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthGuard } from './presentation/auth.guard';
   controllers: [AuthController],
   providers: [
     AuthGuard,
+    AuthRateLimitGuard,
     { provide: AUTH_REPOSITORY, useClass: PostgresAuthRepository },
     {
       provide: AuthService,

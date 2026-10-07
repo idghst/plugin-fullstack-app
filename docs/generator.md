@@ -4,6 +4,7 @@
 
 ```sh
 pnpm create:project my-service
+pnpm create:project local-service --database local
 pnpm create:project web-service --no-mobile --no-desktop
 pnpm create:project api-service --no-web --no-mobile --no-desktop
 pnpm create:project my-service --interactive
@@ -14,19 +15,23 @@ name은 1–64자 소문자·숫자·hyphen이며 알파벳으로 시작한다. 
 
 ## 옵션
 
-| 옵션            | 결과                                                      |
-| --------------- | --------------------------------------------------------- |
-| 기본값          | API + Web + Mobile + Desktop + Auth + PostgreSQL          |
-| `--no-web`      | web 폴더, dev:web, test:e2e 제거; dev에서 web filter 제거 |
-| `--no-mobile`   | mobile 폴더와 dev:mobile 제거                             |
-| `--no-desktop`  | desktop 폴더, dev:desktop, native desktop workflow 제거   |
-| `--no-auth`     | 지원하지 않음을 명시하고 생성 전 중단                     |
-| `--no-database` | 지원하지 않음을 명시하고 생성 전 중단                     |
-| 알 수 없는 flag | 생성 전 오류                                              |
+| 옵션                  | 결과                                                                        |
+| --------------------- | --------------------------------------------------------------------------- |
+| 기본값                | API + Web + Mobile + Desktop + Auth + 기존 외부 PostgreSQL                  |
+| `--database external` | 기존 Supabase/PostgreSQL 연결을 private env에서 설정; 기본값                |
+| `--database local`    | 로컬 Docker용 공개 localhost 개발/테스트 연결값 선택                        |
+| `--no-web`            | web 폴더, dev:web, test:e2e 제거; dev에서 web filter 제거                   |
+| `--no-mobile`         | mobile 폴더와 dev:mobile 제거                                               |
+| `--no-desktop`        | desktop 폴더, dev:desktop, native workflow와 desktop 전용 tooling/test 제거 |
+| `--no-auth`           | 지원하지 않음을 명시하고 생성 전 중단                                       |
+| `--no-database`       | 지원하지 않음을 명시하고 생성 전 중단                                       |
+| 알 수 없는 flag       | 생성 전 오류                                                                |
 
 인증 없는 제품이나 DB 없는 제품은 요구사항에 맞춰 Project slice와 session adapter를 다시 설계해야 한다. 이 템플릿은 이를 처리하지 않은 채 옵션만 있다고 주장하지 않는다. 향후 이 옵션을 구현하면 contracts, server, UI, seed, integration/CI까지 제거하거나 실제 대체 adapter로 바꾸고 옵션별 실행 검증을 추가해야 한다.
 
 ## 안전과 결과
+
+선택은 비밀값 없는 `starter.config.json`에 기록하며 source의 profile이나 비밀값을 복사하지 않는다. interactive는 기존 Supabase/PostgreSQL과 로컬 Docker를 묻는다. 생성 후 `pnpm install`, `pnpm env:setup`을 실행하고 private `.env`에 DB URL을 설정한다. 기본 external은 빈 URL을 만들며 local만 localhost 개발/테스트 값을 만든다. 기존 env는 항상 보존한다. CLI에는 DB 주소·비밀번호를 전달하지 않는다. 생성·env setup은 DB 시작·migration·seed를 실행하지 않는다.
 
 복사와 설정 변경은 현재 디렉터리의 staging 폴더에서 수행한다. 대상 폴더가 있으면 시작하지 않고, 준비가 끝나면 `mkdir`로 새 대상 디렉터리를 exclusive하게 확보한 뒤 staging 항목을 그 안으로 하나씩 이동한다. Windows에서도 기존 디렉터리를 교체하지 않는다. 항목 이동 중 오류가 나면 staging과 이번 생성에서 확보한 대상 디렉터리를 정리하며 기존 대상은 삭제하지 않는다. 프로젝트 전체가 한 번에 공개되는 atomic 작업은 아니므로, 성공 메시지가 나오기 전에 대상 파일을 사용하지 않는다.
 

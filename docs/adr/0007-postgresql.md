@@ -19,6 +19,10 @@ SQLite는 간단하지만 production에 PostgreSQL을 사용할 때 동시성/SQ
 
 DB URL은 서버 전용 secret이다. 운영은 별도 계정·backup·restore 정책을 결정한다. schema migration은 test DB와 기존 데이터에 검증하며 volume 삭제는 자동 수행하지 않는다.
 
-## 근거
+## 2026-10-07 초기화 방향 갱신
+
+PostgreSQL 관계/transaction 모델은 유지한다. 생성기 기본은 기존 Supabase/PostgreSQL인 external이며 Docker dev/test는 local 선택으로 제공한다. 운영/서비스용 DB와 테스트 DB, runtime/migration 계정은 분리한다. 현재 public schema/FK를 임의 schema로 바꾸는 자동화는 포함하지 않는다. 접속 URL 변경은 데이터 이전을 뜻하지 않는다. [DB](../database.md).
+
+## 기존 근거
 
 [PostgreSQL constraints](https://www.postgresql.org/docs/17/ddl-constraints.html), [Transactions](https://www.postgresql.org/docs/17/tutorial-transactions.html)
